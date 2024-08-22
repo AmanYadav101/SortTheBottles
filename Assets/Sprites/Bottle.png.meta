@@ -1,0 +1,245 @@
+fileFormatVersion: 2
+guid: 425ef532b0ff1264eafc1b86c43ca463
+TextureImporter:
+  internalIDToNameTable: []
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: 0
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 3
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Windows Store Apps
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Bottle_1
+      rect:
+        serializedVersion: 2
+        x: 1179
+        y: 213
+        width: 717
+        height: 2701
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 180.5, y: -1289.5}
+        - {x: -12.5, y: -1328.5}
+        - {x: -204.5, y: -1286.5}
+        - {x: -334.5, y: -1212.5}
+        - {x: -342.5, y: 435.5}
+        - {x: -135.5, y: 1338.5}
+        - {x: 131.5, y: 1338.5}
+        - {x: 328.5, y: 412.5}
+        - {x: 326.5, y: -1201.5}
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0308be7ca591c1840a0f9c358e66c15e
+      internalID: -1116153998
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline:
+    - - {x: 162, y: -1275}
+      - {x: -26, y: -1301}
+      - {x: -216, y: -1253}
+      - {x: -338, y: -1171}
+      - {x: -337, y: 448}
+      - {x: -268, y: 542}
+      - {x: -192, y: 593}
+      - {x: -158, y: 668}
+      - {x: -130, y: 1354}
+      - {x: 138, y: 1354}
+      - {x: 150, y: 690}
+      - {x: 205, y: 584}
+      - {x: 290, y: 527}
+      - {x: 339, y: 443}
+      - {x: 328, y: -1185}
+    physicsShape:
+    - - {x: 166.32385, y: -1279.5405}
+      - {x: -11.449219, y: -1308.5728}
+      - {x: -210.75403, y: -1261.8899}
+      - {x: -325.73584, y: -1184.3225}
+      - {x: -342.0526, y: 448.81934}
+      - {x: -277.3827, y: 537.6443}
+      - {x: -191.27063, y: 591.90674}
+      - {x: -152.80054, y: 682.25635}
+      - {x: -140, y: 1363}
+      - {x: 143.98218, y: 1363}
+      - {x: 154.23938, y: 667.22363}
+      - {x: 219.78064, y: 572.8491}
+      - {x: 343.56738, y: 466.14685}
+      - {x: 326.21338, y: -1191.3313}
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 1537655665
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    nameFileIdTable:
+      Bottle_0: -1364605504
+      Bottle_1: -1116153998
+      Bottle_10: -221881746
+      Bottle_11: -1922226539
+      Bottle_12: 1095477332
+      Bottle_13: 1084478569
+      Bottle_14: 283176479
+      Bottle_15: 1495740642
+      Bottle_16: -2074673167
+      Bottle_17: 2011015956
+      Bottle_18: -1589608696
+      Bottle_19: 226972303
+      Bottle_2: -1461676075
+      Bottle_20: -1968149846
+      Bottle_21: -978777981
+      Bottle_22: -264650638
+      Bottle_23: 748144457
+      Bottle_24: -580962698
+      Bottle_25: -90608251
+      Bottle_26: -968923613
+      Bottle_27: 460881601
+      Bottle_28: -1296579311
+      Bottle_29: 939416189
+      Bottle_3: 1092158957
+      Bottle_30: -1948470929
+      Bottle_31: -274029792
+      Bottle_32: -953422386
+      Bottle_4: -1196836373
+      Bottle_5: -98132524
+      Bottle_6: 2142468697
+      Bottle_7: -1697052652
+      Bottle_8: -1814898219
+      Bottle_9: 1157961198
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
