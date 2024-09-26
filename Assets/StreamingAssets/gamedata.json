@@ -1,0 +1,39 @@
+{
+  "levels": [
+    {
+      "level": 1,
+      "bottles": 5,
+      "colors": 3
+    },
+    {
+      "level": 2,
+      "bottles": 5,
+      "colors": 3
+    },
+    {
+      "level": 3,
+      "bottles": 5,
+      "colors": 3
+    },
+    {
+      "level": 4,
+      "bottles": 6,
+      "colors": 4
+    },
+    {
+      "level": 5,
+      "bottles": 6,
+      "colors": 4
+    },
+    {
+      "level": 6,
+      "bottles": 7,
+      "colors": 5
+    },
+    {
+      "level": 7,
+      "bottles": 7,
+      "colors": 5
+    }
+  ]
+}
