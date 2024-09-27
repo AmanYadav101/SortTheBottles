@@ -21,8 +21,10 @@ public class BottleManager : MonoBehaviour
 {
     public GameObject bottlePrefab; // Prefab for bottle with a Bottle script
     public GameObject imagePrefab; // Prefab with an Image component
-    public Sprite[] allColorSprites; // All available sprites for colors
+    //public Sprite[] allColorSprites; // All available sprites for colors
     public Transform bottleParent; // Parent object to hold all bottles
+    public Sprite whiteSprite; // A white sprite that is used for all images
+    public Color[] allColors;// Array of colors to be used
 
     private List<Bottle> bottles = new List<Bottle>();
     private GameData gameData;
@@ -69,6 +71,7 @@ public class BottleManager : MonoBehaviour
         {
             GameObject newBottleObject = Instantiate(bottlePrefab, bottleParent);
             Bottle newBottle = newBottleObject.GetComponent<Bottle>();
+            newBottle.name = "bottle_" + i.ToString();
             bottles.Add(newBottle);
         }
 
@@ -78,28 +81,29 @@ public class BottleManager : MonoBehaviour
             gameManager.SetBottles(bottles.ToArray());
         }
 
-        Sprite[] spritesToFill = CreateColorListWithDuplicates(levelData.colors, 4);
-        ShuffleArray(spritesToFill);
+        // Create the color list based on the number of colors
+        Color[] colorsToFill = CreateColorListWithDuplicates(levelData.colors, 4);
+        ShuffleArray(colorsToFill);
 
-        int spriteIndex = 0;
+        int colorIndex = 0;
         foreach (Bottle bottle in bottles)
         {
-            FillBottleWithImages(bottle, spritesToFill, ref spriteIndex);
+            FillBottleWithImages(bottle, colorsToFill, ref colorIndex);
         }
     }
-   
-    private Sprite[] CreateColorListWithDuplicates(int colorCount, int duplicatesPerColor)
+
+    private Color[] CreateColorListWithDuplicates(int colorCount, int duplicatesPerColor)
     {
-        Sprite[] result = new Sprite[colorCount * duplicatesPerColor];
-        Sprite[] selectedColors = new Sprite[colorCount];
+        Color[] result = new Color[colorCount * duplicatesPerColor];
+        Color[] selectedColors = new Color[colorCount];
 
         for (int i = 0; i < colorCount; i++)
         {
-            selectedColors[i] = allColorSprites[i];
+            selectedColors[i] = allColors[i];
         }
 
         int index = 0;
-        foreach (Sprite color in selectedColors)
+        foreach (Color color in selectedColors)
         {
             for (int i = 0; i < duplicatesPerColor; i++)
             {
@@ -111,14 +115,14 @@ public class BottleManager : MonoBehaviour
         return result;
     }
 
-    private void FillBottleWithImages(Bottle bottle, Sprite[] sprites, ref int spriteIndex)
+    private void FillBottleWithImages(Bottle bottle, Color[] colors, ref int colorIndex)
     {
         for (int i = 0; i < bottle.maxCapacity; i++)
         {
-            if (spriteIndex >= sprites.Length) break;
+            if (colorIndex >= colors.Length) break;
 
-            Sprite sprite = sprites[spriteIndex];
-            spriteIndex++;
+            Color color = colors[colorIndex];
+            colorIndex++;
 
             // Create a new GameObject with an Image component
             GameObject imageObject = Instantiate(imagePrefab);
@@ -129,8 +133,8 @@ public class BottleManager : MonoBehaviour
             Image image = imageObject.GetComponent<Image>();
             if (image != null)
             {
-                image.sprite = sprite;
-                image.color = Color.white;
+                image.sprite = whiteSprite; // Set the sprite to a white sprite
+                image.color = color; // Set the color to the desired color
                 bottle.AddImage(image);
             }
             else
@@ -140,14 +144,15 @@ public class BottleManager : MonoBehaviour
         }
     }
 
-    private void ShuffleArray(Sprite[] array)
+    private void ShuffleArray(Color[] array)
     {
         for (int i = array.Length - 1; i > 0; i--)
         {
             int j = Random.Range(0, i + 1);
-            Sprite temp = array[i];
+            Color temp = array[i];
             array[i] = array[j];
             array[j] = temp;
         }
     }
 }
+
