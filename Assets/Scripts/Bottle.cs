@@ -13,13 +13,6 @@ public class Bottle : MonoBehaviour
     {
         if (currentFillLevel < maxCapacity)
         {
-            /*image.fillMethod = Image.FillMethod.Vertical;
-            image.fillAmount = 0f; // Start with no fill
-
-            // Animate the fill amount to 1 over 1 second
-            image.DOFillAmount(1f, 1f).SetEase(Ease.Linear);*/
-
-
             liquidStack.Push(image);
             currentFillLevel++;
             return true;

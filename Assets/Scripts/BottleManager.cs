@@ -21,7 +21,6 @@ public class BottleManager : MonoBehaviour
 {
     public GameObject bottlePrefab; // Prefab for bottle with a Bottle script
     public GameObject imagePrefab; // Prefab with an Image component
-    //public Sprite[] allColorSprites; // All available sprites for colors
     public Transform bottleParent; // Parent object to hold all bottles
     public Sprite whiteSprite; // A white sprite that is used for all images
     public Color[] allColors;// Array of colors to be used
