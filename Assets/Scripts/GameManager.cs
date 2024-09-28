@@ -77,7 +77,9 @@ public class GameManager : MonoBehaviour
         else
         {
             HighlightBottle(selectedBottle, false);
-            if (selectedBottle != clickedBottle && clickedBottle.currentFillLevel < clickedBottle.maxCapacity)
+            //the selected bottle is not empty check so that the empty bottles dont become uninteractable after we select them and try to move the liquid to the clickedbottle
+            //which will keep the "bInteractable" bool to false for them.
+            if (selectedBottle != clickedBottle && selectedBottle.currentFillLevel != 0  && clickedBottle.currentFillLevel < clickedBottle.maxCapacity)
             {
                 MoveLiquid(selectedBottle, clickedBottle);
             }
@@ -93,6 +95,7 @@ public class GameManager : MonoBehaviour
             bInteractable = false;
 
             EventTrigger fromEventTrigger = fromBottle.GetComponent<EventTrigger>();
+            EventTrigger toBottleEventTrigger = toBottle.GetComponent<EventTrigger>();
 
             if (fromBottle == null || toBottle == null || fromBottle == toBottle) return;
 
@@ -100,7 +103,9 @@ public class GameManager : MonoBehaviour
             bool canMove = false;
             Color transferColor = Color.white;
 
-            // Gather consecutive images with the same color from the top of the fromBottle
+            // Gather consecutive images with the same color from the top of the "fromBottle"
+            //1. Removes the images first which is stored in the "currentImage". then checks if the image that is removes has the same color as of the image thats already in the "imagesToMove" list
+            //2. if the removed image has same color, then that image is added to the "imagesToMove" list or else it added back to the "frombottle"
             while (fromBottle.currentFillLevel > 0)
             {
                 Image currentImage = fromBottle.RemoveImage();
@@ -111,7 +116,7 @@ public class GameManager : MonoBehaviour
                 if (imagesToMove.Count == 0 || imagesToMove[0].color == currentImage.color)
                 {
                     imagesToMove.Add(currentImage);
-                    transferColor = currentImage.color; // Using color instead of sprite
+                    transferColor = currentImage.color; //Stores the color of the image which is then later used for the line renderer
                 }
                 else
                 {
@@ -120,18 +125,51 @@ public class GameManager : MonoBehaviour
                 }
             }
             Debug.Log("Image to move count" + imagesToMove.Count);
-            if (imagesToMove.Count == 0) return;
-
+            if (imagesToMove.Count == 0)
+            {
+                //can make bInteractable to true here so that if we try to transferfrom one empty bottle to another, the bInteracable dont always stay false for those bottles.
+                //but we will just not let the function run if the "selectedBottle"'s capacity is 0 in the "OnBottleClicked" event.
+                //bInteractable = true;
+                return; //if the "fromBottle" is empty, then the imagesToMove is empty and this statement then early returns.
+            }
 
             // Determine if we can move images based on the destination bottle's state
             canMove = (toBottle.currentFillLevel == 0 || (toBottle.PeekTopImage().color == imagesToMove[0].color));
+            
+            //If "canMove" is false, then sets the "bInteractable" to true, also puts back all the images that were retrieved from the "fromBottle"
+            //and early returns. And we are starting the loop from the back
+            //bc if start from 0 then the images are removed from bottom instead of the top.
+            if(!canMove)
+            {
+                for(int i = imagesToMove.Count-1; i >= 0; i--)
+                {
+                    fromBottle.AddImage(imagesToMove[i]);
+                }
+                bInteractable = true;
+                return;
+            }
+
+            //this is if we try to add images to the "toBottle" if the "currentFillLEvel" of the "toBottle" and "count" of "imagesToMove" exceeds the "maxCapacity" of the "toBottle"
+            // and the "fromBottle" doenst go empty without moving its images to the "toBottle"
+            if (toBottle.currentFillLevel + imagesToMove.Count > toBottle.maxCapacity)
+            {
+
+                for (int i = imagesToMove.Count - 1; i >= 0; i--)
+                {
+                    fromBottle.AddImage(imagesToMove[i]);
+                }
+                bInteractable = true;
+                return;
+            }
             Debug.Log("can move " + canMove);
             Debug.Log("Curremt fill level " + toBottle.currentFillLevel + "    " + imagesToMove.Count);
             if (canMove && (toBottle.currentFillLevel + imagesToMove.Count <= toBottle.maxCapacity))
             {
-
-                if (fromEventTrigger != null)
+                //turn off the event triggers for the tobottle and from bottle
+                //which at this point is not needed as the binteractble takes care of everything that this block of code does.
+                if (fromEventTrigger != null&&toBottle!=null)
                 {
+ //                  toBottleEventTrigger.enabled = false;
                     fromEventTrigger.enabled = false;
                 }
 
@@ -139,17 +177,23 @@ public class GameManager : MonoBehaviour
                 Vector3 targetPosition = toBottle.transform.position + new Vector3(0, 0.5f, 0);
                 gRO.enabled = false;
 
-                // Step 1: Move the bottle to the target bottle's position
+                //Moves to location of "toBottle"->Rotates and starts pouring the liquid at same time using the "OnPlay"
+                //->moves the images ->Rotates back to 0 and MovesBack at the same time using "OnPlay" and then makes the "bIteractable to true"
                 fromBottle.transform.DOMove(targetPosition, 1f).OnComplete(() =>
                 {
 
-                    fromBottle.transform.DORotate(new Vector3(0, 0, 45f), 1f).OnComplete(() =>
-                    {
-                        // Start moving liquid images and animate their fill
+                    //Enables the Line renderer and sets the startcolor and end color of the line renderer to the "transferColor"
+                    //which was assigned earlier to the color that is in the "imagesToMove" list.
                         ToggleLine(true, fromBottle.transform.position, toBottle.transform.position);
+                        lineRenderer.startColor = transferColor;
+                        lineRenderer.endColor = transferColor;  
 
+                    fromBottle.transform.DORotate(new Vector3(0, 0, 55), 2f).OnPlay(() =>
+                    {
                         int delay = 0;
+                        // Start moving liquid images and animate their fill
                         int count = imagesToMove.Count;
+
                         // After the animation completes, transfer all images to the toBottle at once
                         for (int i = imagesToMove.Count - 1; i >= 0; i--)
                         {
@@ -185,7 +229,7 @@ public class GameManager : MonoBehaviour
                             delay += 1;
 
                         }
-                        fromBottle.transform.DORotate(Vector3.zero, 1f).SetDelay(delay).OnComplete(() =>
+                        fromBottle.transform.DORotate(Vector3.zero, 1f).SetDelay(delay).OnPlay(() =>
                         {
                             ToggleLine(false, fromBottle.transform.position, toBottle.transform.position);
 
@@ -194,6 +238,7 @@ public class GameManager : MonoBehaviour
                                 // Enable event trigger and check win condition after completion
                                 if (fromEventTrigger != null)
                                 {
+//                                    toBottleEventTrigger.enabled= true;
                                     fromEventTrigger.enabled = true;
                                 }
                                 gRO.enabled = true;
@@ -201,268 +246,19 @@ public class GameManager : MonoBehaviour
                                 CheckWinCondition();
                             });
                         });
-
-                       
                     });
                 });
             }
         }
         else
         {
-            // Return the images to the original bottle if the move can't be done
-            /*foreach (Image imageToMove in imagesToMove)
+           /* // Return the images to the original bottle if the move can't be done
+            *//*foreach (Image imageToMove in imagesToMove)
             {
                 fromBottle.AddImage(imageToMove);
             }*/
         }
     }
-
-
-    //public void MoveLiquid(Bottle fromBottle, Bottle toBottle)
-    //{
-    //    EventTrigger fromEventTrigger = fromBottle.GetComponent<EventTrigger>();
-
-    //    if (fromBottle == null || toBottle == null || fromBottle == toBottle) return;
-
-    //    List<Image> imagesToMove = new List<Image>();
-    //    bool canMove = false;
-    //    Color transferColor = Color.white;
-
-    //    // Gather consecutive images with the same color from the top of the fromBottle
-    //    while (fromBottle.currentFillLevel > 0)
-    //    {
-    //        Image currentImage = fromBottle.RemoveImage();
-    //        if (currentImage == null) break;
-
-    //        if (imagesToMove.Count == 0 || imagesToMove[0].color == currentImage.color)
-    //        {
-    //            imagesToMove.Add(currentImage);
-    //            transferColor = currentImage.color; // Using color instead of sprite
-    //        }
-    //        else
-    //        {
-    //            fromBottle.AddImage(currentImage);
-    //            break;
-    //        }
-    //    }
-
-    //    if (imagesToMove.Count == 0) return;
-
-    //    // Determine if we can move images based on the destination bottle's state
-    //    canMove = (toBottle.currentFillLevel == 0 || (toBottle.PeekTopImage()?.color == imagesToMove[0].color));
-
-    //    if (canMove && (toBottle.currentFillLevel + imagesToMove.Count <= toBottle.maxCapacity))
-    //    {
-    //        if (fromEventTrigger != null)
-    //        {
-    //            fromEventTrigger.enabled = false;
-    //        }
-
-    //        Vector3 originalPosition = fromBottle.transform.position;
-    //        Vector3 targetPosition = toBottle.transform.position + new Vector3(0, 0.5f, 0);
-    //        gRO.enabled = false;
-
-    //        // Step 1: Move the bottle to the target bottle's position
-    //        fromBottle.transform.DOMove(targetPosition, 1f).OnComplete(() =>
-    //        {
-    //            // Step 2: Rotate the bottle by 45 degrees
-    //            fromBottle.transform.DORotate(new Vector3(0, 0, 45f), 1f).OnComplete(() =>
-    //            {
-    //                // Start moving liquid images and animate their fill
-    //                ToggleLine(true, fromBottle.transform.position, toBottle.transform.position);
-
-    //                // Step 3: Use a single image to represent the transfer animation
-    //                GameObject tempImageObj = Instantiate(imagesToMove[0].gameObject, null); // Create a temporary image object
-
-
-    //                tempImageObj.transform.SetParent(toBottle.transform, false);
-    //                Image tempImage = tempImageObj.GetComponent<Image>();
-
-
-    //                // Set initial properties for the animation
-    //                tempImage.fillMethod = Image.FillMethod.Vertical;
-    //                tempImage.fillAmount = 0f;
-    //                tempImage.color = transferColor; // Use the color of the liquid being transferred
-
-    //                // Animate the liquid transfer with a single sprite
-    //                tempImage.DOFillAmount(1f, 1f).SetEase(Ease.Linear).OnComplete(() =>
-    //                {
-    //                // After the animation completes, transfer all images to the toBottle at once
-    //                for (int i = imagesToMove.Count - 1; i >= 0; i--)
-    //                {
-    //                    Image imageToMove = imagesToMove[i];
-    //                    imageToMove.fillMethod = Image.FillMethod.Radial180;
-    //                    imageToMove.fillClockwise = true;
-    //                    // Destroy the original image from the fromBottle
-    //                    imageToMove.DOFillAmount(0.0f, 1.0f).SetEase(Ease.Linear).OnComplete(()=>
-    //                        {
-    //                        Destroy(imageToMove.gameObject);
-
-    //                    });
-    //                    // Clone the image into the toBottle
-    //                    GameObject newImageObj = Instantiate(imageToMove.gameObject, toBottle.transform);
-    //                    Image newImage = newImageObj.GetComponent<Image>();
-
-    //                    newImage.fillAmount = 1f; // Set fill amount directly to full since the transfer is done
-    //                    newImage.color = transferColor;
-
-    //                    // Add the new image to the toBottle
-    //                    toBottle.AddImage(newImage);
-
-
-    //                    }
-
-    //                    // Destroy the temporary image used for the animation
-    //                    Destroy(tempImageObj);
-
-    //                    // Step 4: Return the bottle to its original rotation
-    //                    fromBottle.transform.DORotate(Vector3.zero, 1f).OnComplete(() =>
-    //                    {
-    //                        // Step 5: Stop the line rendering
-    //                        ToggleLine(false, fromBottle.transform.position, toBottle.transform.position);
-
-    //                        // Step 6: Move the bottle back to its original position
-    //                        fromBottle.transform.DOMove(originalPosition, 1f).OnComplete(() =>
-    //                        {
-    //                            // Enable event trigger and check win condition after completion
-    //                            if (fromEventTrigger != null)
-    //                            {
-    //                                fromEventTrigger.enabled = true;
-    //                            }
-    //                            CheckWinCondition();
-    //                            gRO.enabled = true;
-    //                        });
-    //                    });
-    //                });
-    //            });
-    //        });
-    //    }
-    //    else
-    //    {
-    //        // Return the images to the original bottle if the move can't be done
-    //        foreach (Image imageToMove in imagesToMove)
-    //        {
-    //            fromBottle.AddImage(imageToMove);
-    //        }
-    //    }
-    //}
-
-    /*public void MoveLiquid(Bottle fromBottle, Bottle toBottle)
-    {
-        EventTrigger fromEventTrigger = fromBottle.GetComponent<EventTrigger>();
-
-        if (fromBottle == null || toBottle == null || fromBottle == toBottle) return;
-
-        List<Image> imagesToMove = new List<Image>();
-        bool canMove = false;
-        Color transferColor = Color.white;
-
-        // Gather consecutive images with the same color from the top of the fromBottle
-        while (fromBottle.currentFillLevel > 0)
-        {
-            Image currentImage = fromBottle.RemoveImage();
-            if (currentImage == null) break;
-
-            if (imagesToMove.Count == 0 || imagesToMove[0].color == currentImage.color)
-            {
-                imagesToMove.Add(currentImage);
-                transferColor = currentImage.color; // Using color instead of sprite
-            }
-            else
-            {
-                fromBottle.AddImage(currentImage);
-                break;
-            }
-        }
-
-        if (imagesToMove.Count == 0) return;
-
-        // Determine if we can move images based on the destination bottle's state
-        canMove = (toBottle.currentFillLevel == 0 || (toBottle.PeekTopImage()?.color == imagesToMove[0].color));
-
-        if (canMove && (toBottle.currentFillLevel + imagesToMove.Count <= toBottle.maxCapacity))
-        {
-            if (fromEventTrigger != null)
-            {
-                fromEventTrigger.enabled = false;
-            }
-           
-            Vector3 originalPosition = fromBottle.transform.position;
-            Vector3 targetPosition = toBottle.transform.position + new Vector3(0, 0.5f, 0);
-            gRO.enabled = false;
-            // Step 1: Move to target bottle position
-            fromBottle.transform.DOMove(targetPosition, 1f).OnComplete(() =>
-            {
-                // Step 2: Rotate the bottle by 45 degrees
-                fromBottle.transform.DORotate(new Vector3(0, 0, 45f), 1f).OnComplete(() =>
-                {
-                    // Start moving liquid images and animate their fill
-                    ToggleLine(true, fromBottle.transform.position, toBottle.transform.position);
-
-                    // Step 3: Transfer liquid images
-                    for (int i = imagesToMove.Count - 1; i >= 0; i--)
-                    {
-                        Image imageToMove = imagesToMove[i];
-                        GameObject go = imageToMove.gameObject;
-
-                        // Clone the image into the toBottle instead of moving it
-                        GameObject newImageObj = Instantiate(go, null);
-                        newImageObj.transform.SetParent(toBottle.transform, false);
-                       Image newImage = newImageObj.GetComponent<Image>();
-
-                        // Set properties of the new image
-                        newImage.transform.localPosition = Vector3.zero;
-                        newImage.transform.localScale = Vector3.one;
-
-                        newImage.fillMethod = Image.FillMethod.Vertical;
-                        newImage.fillAmount = 0f; // Start with no fill
-
-                        // Animate the fill amount to 1 over 1 second
-                        newImage.DOFillAmount(1f, 1f).SetEase(Ease.Linear);
-
-                        // Update the line renderer colors
-                        lineRenderer.startColor = transferColor;
-                        lineRenderer.endColor = transferColor;
-
-                        // Add the new image to the toBottle
-                        toBottle.AddImage(newImage);
-
-                        // Destroy the original image from the fromBottle after the transfer
-                        Destroy(imageToMove.gameObject);
-                    }
-
-                    // Step 4: Return the bottle to its original rotation
-                    fromBottle.transform.DORotate(Vector3.zero, 1f).OnComplete(() =>
-                    {
-                        // Step 5: Stop the line rendering
-                        ToggleLine(false, fromBottle.transform.position, toBottle.transform.position);
-
-                        // Step 6: Move the bottle back to its original position
-                        fromBottle.transform.DOMove(originalPosition, 1f).OnComplete(() =>
-                        {
-                            // Enable event trigger and check win condition after completion
-                            if (fromEventTrigger != null)
-                            {
-                                fromEventTrigger.enabled = true;
-                            }
-                            CheckWinCondition();
-                            gRO.enabled = true;
-
-                        });
-                    });
-                });
-            });
-        }
-        else
-        {
-            // Return the images to the original bottle if the move can't be done
-            foreach (Image imageToMove in imagesToMove)
-            {
-                fromBottle.AddImage(imageToMove);
-            }
-        }
-    }
-*/
 
 
     private void HighlightBottle(Bottle bottle, bool highlight)
@@ -480,6 +276,8 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    //Increases and Checks the filledBottleCount which is the number of bottles that are filled. Number of Fully filled bottles will always be 2 less than the amount of bottles in the scene.
+    //then  checks if the bottles are filled with the same color or not.
     public void CheckWinCondition()
     {
         int filledBottleCount = 0;
@@ -506,6 +304,8 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    //Checks if the bottle is filled with the same color or not.
+    //retrieves the top color of the bottle ("firstColor"), then checks if all the color of the bottle are same as of the "firstColor"
     private bool IsBottleFilledWithSameColor(Bottle bottle)
     {
         if (bottle.currentFillLevel == 0) return false;

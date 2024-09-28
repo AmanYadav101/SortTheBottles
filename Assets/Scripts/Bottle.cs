@@ -50,6 +50,3 @@ public class Bottle : MonoBehaviour
         return topImage != null ? topImage.color : Color.clear;
     }
 }
-
-
-

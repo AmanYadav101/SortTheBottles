@@ -33,7 +33,7 @@ public class BottleManager : MonoBehaviour
     private void Start()
     {
         LoadGameData();
-        SetupLevel(1); // Example: Starting with level 1
+        SetupLevel(gameManager.currentLevel); // Example: Starting with level 1
     }
 
     private void LoadGameData()
