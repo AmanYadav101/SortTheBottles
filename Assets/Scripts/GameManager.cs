@@ -7,15 +7,15 @@ using DG.Tweening;
 public class GameManager : MonoBehaviour
 {
     public Bottle[] bottles;
-    private Bottle selectedBottle = null;
-    private BottleManager bottleManager;
     public int currentLevel;
-    private UIManager uIManager;
     public GridLayoutGroup gRO ;
 
+    private UIManager uIManager;
+    private Bottle selectedBottle = null;
+    private BottleManager bottleManager;
     private bool bInteractable = true;
-
     private LineRenderer lineRenderer;
+    [SerializeField] private float moveAndRotateTime = 0f;
 
     private void Start()
     {
@@ -179,7 +179,7 @@ public class GameManager : MonoBehaviour
 
                 //Moves to location of "toBottle"->Rotates and starts pouring the liquid at same time using the "OnPlay"
                 //->moves the images ->Rotates back to 0 and MovesBack at the same time using "OnPlay" and then makes the "bIteractable to true"
-                fromBottle.transform.DOMove(targetPosition, 1f).OnComplete(() =>
+                fromBottle.transform.DOMove(targetPosition, moveAndRotateTime).OnComplete(() =>
                 {
 
                     //Enables the Line renderer and sets the startcolor and end color of the line renderer to the "transferColor"
@@ -188,9 +188,9 @@ public class GameManager : MonoBehaviour
                         lineRenderer.startColor = transferColor;
                         lineRenderer.endColor = transferColor;  
 
-                    fromBottle.transform.DORotate(new Vector3(0, 0, 55), 2f).OnPlay(() =>
+                    fromBottle.transform.DORotate(new Vector3(0, 0, 55), moveAndRotateTime).OnPlay(() =>
                     {
-                        int delay = 0;
+                        float delay = 0;
                         // Start moving liquid images and animate their fill
                         int count = imagesToMove.Count;
 
@@ -226,14 +226,14 @@ public class GameManager : MonoBehaviour
                                 imagesToMove[imagesToMove.Count - i - 1].DOFillAmount(0f, 1f).SetEase(Ease.Linear).SetDelay(delay);
                             }
 
-                            delay += 1;
+                            delay += 1f;
 
                         }
-                        fromBottle.transform.DORotate(Vector3.zero, 1f).SetDelay(delay).OnPlay(() =>
+                        fromBottle.transform.DORotate(Vector3.zero, moveAndRotateTime).SetDelay(delay).OnPlay(() =>
                         {
                             ToggleLine(false, fromBottle.transform.position, toBottle.transform.position);
 
-                            fromBottle.transform.DOMove(originalPosition, 1f).OnComplete(() =>
+                            fromBottle.transform.DOMove(originalPosition, moveAndRotateTime).OnComplete(() =>
                             {
                                 // Enable event trigger and check win condition after completion
                                 if (fromEventTrigger != null)

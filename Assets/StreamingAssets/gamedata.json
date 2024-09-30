@@ -2,8 +2,8 @@
   "levels": [
     {
       "level": 1,
-      "bottles": 5,
-      "colors": 3
+      "bottles": 24,
+      "colors": 18
     },
     {
       "level": 2,
