@@ -13,7 +13,7 @@ public class GameManager : MonoBehaviour
     private UIManager uIManager;
     private Bottle selectedBottle = null;
     private BottleManager bottleManager;
-    private bool bInteractable = true;
+    public bool bInteractable = true;
     private LineRenderer lineRenderer;
     [SerializeField] private float moveAndRotateTime = 0f;
 
